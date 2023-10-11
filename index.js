@@ -1,5 +1,6 @@
 const redux = require("redux");
 const createStore = redux.createStore;
+const combineReducers = redux.combineReducers
 
 /**
  * Action: Describe what happened, but don't describe the application's state changes.
@@ -23,13 +24,13 @@ function orderCake(quantity = 1) {
 }
 
 function orderIceCream(quantity = 1) {
-    // define an action
-    return {
-      type: ICECREAM_ORDERED,
-      payload: quantity, // can be added optionally
-    };
-    // That is it action is created
-  }
+  // define an action
+  return {
+    type: ICECREAM_ORDERED,
+    payload: quantity, // can be added optionally
+  };
+  // That is it action is created
+}
 
 function restockCake(restockQuantity = 1) {
   return {
@@ -39,11 +40,11 @@ function restockCake(restockQuantity = 1) {
 }
 
 function restockIceCream(restockQuantity = 1) {
-    return {
-      type: ICRECREAM_RESTOCKED,
-      payload: restockQuantity,
-    };
-  }
+  return {
+    type: ICRECREAM_RESTOCKED,
+    payload: restockQuantity,
+  };
+}
 
 /**
  * Reducers: Specify how the application's state changes in response to actions sent to the store.
@@ -52,16 +53,15 @@ function restockIceCream(restockQuantity = 1) {
  */
 
 // Example State: Whenever the ownser opens the shop, there are 10 cakes on the shelf
-const initialState = {
+const initialCakeState = {
   numOfCakes: 10,
-  numOfIceCreams: 20
 };
-const iceCreamState = {
-    numOfIceCreams: 20
-}
+const initialIceCreamState = {
+  numOfIceCreams: 20,
+};
 
 // Reducer = shop keeper
-const reducer = (state = initialState, action) => {
+const cakeReducer = (state = initialCakeState, action) => {
   const payload = action.payload;
   switch (action.type) {
     case CAKE_ORDERED:
@@ -75,23 +75,37 @@ const reducer = (state = initialState, action) => {
         ...state,
         numOfCakes: state.numOfCakes + payload,
       };
-      case ICECREAM_ORDERED:
+
+    default:
+      return state;
+  }
+};
+
+const iceCreamReducer = (state = initialIceCreamState, action) => {
+  const payload = action.payload;
+  switch (action.type) {
+    case ICECREAM_ORDERED:
       // make a copy of the state object and only update the numOfCakes
       return {
         ...state,
-        numOfCakes: state.numOfIceCreams - payload,
+        numOfIceCreams: state.numOfIceCreams - payload,
       };
     case ICRECREAM_RESTOCKED:
       return {
         ...state,
-        numOfCakes: state.numOfIceCreams + payload,
+        numOfIceCreams: state.numOfIceCreams + payload,
       };
     default:
       return state;
   }
 };
 
-const store = createStore(reducer);
+const rootReducer = redux.combineReducers({
+  cake: cakeReducer,
+  iceCream: iceCreamReducer
+})
+
+const store = createStore(rootReducer);
 // All access to the state via getState()
 console.log("initial state", store.getState());
 // Registers listeners via subscribe(listener)
