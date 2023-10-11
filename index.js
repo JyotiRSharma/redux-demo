@@ -9,15 +9,27 @@ const createStore = redux.createStore;
 const CAKE_ORDERED = "CAKE_ORDERED";
 const CAKE_RESTOCKED = "CAKE_RESTOCKED";
 
+const ICECREAM_ORDERED = "ICRECREAM_ORDERED";
+const ICRECREAM_RESTOCKED = "ICRECREAM_RESTOCKED";
+
 // An action creator creates an action, its a function that returns an action.
-function orderCake() {
+function orderCake(quantity = 1) {
   // define an action
   return {
     type: CAKE_ORDERED,
-    payload: 2, // can be added optionally
+    payload: quantity, // can be added optionally
   };
   // That is it action is created
 }
+
+function orderIceCream(quantity = 1) {
+    // define an action
+    return {
+      type: ICECREAM_ORDERED,
+      payload: quantity, // can be added optionally
+    };
+    // That is it action is created
+  }
 
 function restockCake(restockQuantity = 1) {
   return {
@@ -25,6 +37,13 @@ function restockCake(restockQuantity = 1) {
     payload: restockQuantity,
   };
 }
+
+function restockIceCream(restockQuantity = 1) {
+    return {
+      type: ICRECREAM_RESTOCKED,
+      payload: restockQuantity,
+    };
+  }
 
 /**
  * Reducers: Specify how the application's state changes in response to actions sent to the store.
@@ -35,8 +54,13 @@ function restockCake(restockQuantity = 1) {
 // Example State: Whenever the ownser opens the shop, there are 10 cakes on the shelf
 const initialState = {
   numOfCakes: 10,
+  numOfIceCreams: 20
 };
+const iceCreamState = {
+    numOfIceCreams: 20
+}
 
+// Reducer = shop keeper
 const reducer = (state = initialState, action) => {
   const payload = action.payload;
   switch (action.type) {
@@ -50,6 +74,17 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         numOfCakes: state.numOfCakes + payload,
+      };
+      case ICECREAM_ORDERED:
+      // make a copy of the state object and only update the numOfCakes
+      return {
+        ...state,
+        numOfCakes: state.numOfIceCreams - payload,
+      };
+    case ICRECREAM_RESTOCKED:
+      return {
+        ...state,
+        numOfCakes: state.numOfIceCreams + payload,
       };
     default:
       return state;
@@ -70,8 +105,13 @@ store.dispatch(orderCake());
 store.dispatch(orderCake());
 store.dispatch(orderCake());
 
+store.dispatch(orderIceCream());
+store.dispatch(orderIceCream());
+store.dispatch(orderIceCream());
+
 // Restock the cakes
 store.dispatch(restockCake());
+store.dispatch(restockIceCream());
 
 // Unsubscribe from the store, by calling the function returned by the subscribe method
 unsubscribe();
